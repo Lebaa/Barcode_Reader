@@ -10,7 +10,7 @@ import secret
 from emailer import emailer
 
 
-
+#Funktio jolla avataan selaimeen tilausta vastaava ticketti serviceNowsta
 def selain(ritm):
     driver = webdriver.Firefox()
     driver.get("https://idp.jyu.fi/nidp/saml2/sso?id=jyu&sid=0&option=credential&sid=0")
@@ -20,7 +20,7 @@ def selain(ritm):
     time.sleep(2)
     driver.get(("https://help.jyu.fi/text_search_exact_match.do?sysparm_search=")+ritm)
 
-
+#Viivakoodilukija antaa tiedon HID muodossa, käännetään se oikeiksi numeroiksi
 def HIDconverter(i):
     if i == 30:
         return 1
@@ -47,6 +47,7 @@ tilausnumero = ""
 
 fp = open("/dev/barcode","rb")
 
+#Kuunnellaan jatkuvasti koska tulee viivakoodia, nollista ei tarvitse välittää, 40 on taas normaalina inputtina 40 joten siihen lopetetaan
 while True:
     buffer = fp.read(32)
     for c in buffer:
@@ -57,13 +58,14 @@ while True:
                 print("break")
                 break
 
-
+#Excelin avaus sälää, polku ja kopio sheetistä
     polku = '/home/lehmik/Documents/testi.xlsx'
     filu = xlrd.open_workbook(os.path.join(polku))
     p = filu.sheet_names()
     wb = copy(filu)
     wb_sheet = wb.get_sheet(0)
-
+#Haetaan excelistä löytyykö viivakoodia vastaavaa tilausnumeroa, jos löytyy potkaistaan yläällä oleva selainfunktio, erillisenä oleva sähköpostin lähetys ja
+#exceliin kirjoitus käyntiin. Lopputuloksena exceliin päivittyy tilauksen saapumispäivä, selain avaa tilausta vastaavan tiketin ja lähetetään maili asiasta asiakkaalle.
     for y in p:
         sh = filu.sheet_by_name(y)
         for rownum in range(sh.nrows):
